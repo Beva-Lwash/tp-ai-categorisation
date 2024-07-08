@@ -29,8 +29,11 @@ cur = con.cursor()
 object_df_table = pandas.read_sql_query("SELECT * FROM objects", con)
 api_df_table = pandas.read_sql_query("SELECT * FROM api", con)
 con.close()
-db_merged = pandas.merge(object_df_table, api_df_table, on="userId") 
+db_merged = pandas.merge(object_df_table, api_df_table, on="userId", how='outer', suffixes=('', '_y')).filter(regex='^(?!.*_y)')
 
+db_merged.to_excel('db_merged.xlsx')
+
+"""
 db_merged_normalized = db_merged.copy()
 date_columns = ['lastOnline', 'lastOnlineDate']
 integer_columns = ['age_x', 'counts_pictures_x', 'counts_profileVisits_x', 'counts_kisses_x', 'lastOnlineTs', 'lang_count_x', 'countDetails', 'distance_x', 'age_y', 'counts_details', 'counts_pictures_y', 'counts_profileVisits_y', 'counts_kisses_y', 'counts_fans', 'counts_g', 'distance_y', 'lang_count_y', 'lastOnlineTime']
@@ -52,4 +55,4 @@ for column in integer_columns:
 
 db_merged_normalized.to_excel('db_merged_normalized.xlsx')
 
-
+"""
