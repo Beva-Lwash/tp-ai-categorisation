@@ -29,7 +29,7 @@ cur = con.cursor()
 object_df_table = pandas.read_sql_query("SELECT * FROM objects", con)
 api_df_table = pandas.read_sql_query("SELECT * FROM api", con)
 con.close()
-df_merged = pandas.merge(object_df_table, api_df_table, on="userId", how='inner', suffixes=('', '_y')).filter(regex='^(?!.*_y)')
+df = pandas.merge(object_df_table, api_df_table, on="userId", how='inner', suffixes=('', '_y')).filter(regex='^(?!.*_y)')
 
 
 
@@ -44,14 +44,16 @@ string_columns = ['name', 'whazzup', 'freetext']
 enum_columns = ['city', 'locationCity', 'genderLooking', 'location', 'pictureId']
 empty_columns = ['locationCitySub', 'userInfo_visitDate']
 id_columns = ['userId']
+single_value_columns = ['gender']
 
-df_merged_dropped = df_merged.drop(columns = date_columns + string_columns + empty_columns + id_columns)
+df = df.drop(columns = date_columns + string_columns + empty_columns + id_columns + single_value_columns) #ici on enleve les columns pas interessantes
 
-for column in binary_columns:
-    df_merged_dropped[column] = df_merged_dropped[column].astype(bool)
+for column in binary_columns: #ici on change les 0 et 1 en true et false
+    df[column] = df[column].astype(bool)
 
+df = df.loc[:,~df.apply(lambda x: x.duplicated(),axis=1).all()].copy() #ici on elimine les columns duplicate dans leurs valeurs
 
-df_merged_dropped.to_excel('df_merged_dropped.xlsx')
+df.to_excel('df.xlsx')
 
 """
 db_merged_normalized['lastOnlineTs'].replace('', np.nan, inplace=True)
