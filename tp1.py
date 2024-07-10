@@ -51,26 +51,28 @@ df = df.drop(columns = date_columns + string_columns + empty_columns + id_column
 for column in binary_columns: #ici on change les 0 et 1 en true et false
     df[column] = df[column].astype(bool)
 
+
+
+
+df['lastOnlineTs'].replace('', np.nan, inplace=True) #ici on elimine les rangees vides et on change les timestamp notation scientifique en integers pour lastOnlineTs
+df.dropna(subset=['lastOnlineTs'], inplace=True)
+df['lastOnlineTs'] = pandas.to_numeric(df['lastOnlineTs'])
+
+df['lastOnlineTime'].replace('', np.nan, inplace=True) #ici on elimine les rangees vides et on change les timestamp notation scientifique en integers pour lastOnlineTime
+df.dropna(subset=['lastOnlineTime'], inplace=True)
+df['lastOnlineTime'] = pandas.to_numeric(df['lastOnlineTime'])
+
 df = df.loc[:,~df.apply(lambda x: x.duplicated(),axis=1).all()].copy() #ici on elimine les columns duplicate dans leurs valeurs
+
+"""
+df['diff'] = df['lastOnlineTs'] - df['lastOnlineTime']  #ici on verifie que lastOnlineTs et lastOnlineTime ne sont pas duplicates (!!!)
+df.to_excel('df.xlsx')
+"""
+
+for column in number_columns: 
+    print(column)
+    df[column] = (df[column] - df[column].min()) / (df[column].max() - df[column].min())
 
 df.to_excel('df.xlsx')
 
-"""
-db_merged_normalized['lastOnlineTs'].replace('', np.nan, inplace=True)
-db_merged_normalized.dropna(subset=['lastOnlineTs'], inplace=True)
-db_merged_normalized['lastOnlineTs'] = pandas.to_numeric(db_merged_normalized['lastOnlineTs'])
 
-db_merged_normalized['lastOnlineTime'].replace('', np.nan, inplace=True)
-db_merged_normalized.dropna(subset=['lastOnlineTime'], inplace=True)
-db_merged_normalized['lastOnlineTime'] = pandas.to_numeric(db_merged_normalized['lastOnlineTime'])
-
-db_merged_normalized['distance_y'].replace('', np.nan, inplace=True)
-db_merged_normalized.dropna(subset=['distance_y'], inplace=True)
-
-for column in integer_columns: 
-    print(column)
-    db_merged_normalized[column] = (db_merged_normalized[column] - db_merged_normalized[column].min()) / (db_merged_normalized[column].max() - db_merged_normalized[column].min())
-
-db_merged_normalized.to_excel('db_merged_normalized.xlsx')
-
-"""
