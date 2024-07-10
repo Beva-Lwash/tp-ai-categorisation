@@ -29,16 +29,31 @@ cur = con.cursor()
 object_df_table = pandas.read_sql_query("SELECT * FROM objects", con)
 api_df_table = pandas.read_sql_query("SELECT * FROM api", con)
 con.close()
-db_merged_inner = pandas.merge(object_df_table, api_df_table, on="userId", how='inner', suffixes=('', '_y')).filter(regex='^(?!.*_y)')
+df_merged = pandas.merge(object_df_table, api_df_table, on="userId", how='inner', suffixes=('', '_y')).filter(regex='^(?!.*_y)')
 
-db_merged_inner.to_excel('db_merged_inner.xlsx')
 
+
+
+
+
+date_columns = ['lastOnline', 'lastOnlineDate']
+number_columns = ['age', 'counts_pictures', 'counts_profileVisits', 'counts_kisses', 'lastOnlineTs', 'lang_count', 'countDetails', 'distance', 'counts_details', 'counts_fans', 'counts_g', 'lastOnlineTime']
+binary_columns = ['isFlirtstar', 'isHighlighted', 'isInfluencer', 'isMobile', 'isNew', 'isOnline', 'isVip', 'verified', 'shareProfileEnabled', 'birthd']
+boolean_columns = ['flirtInterests_chat', 'flirtInterests_friends', 'flirtInterests_date', 'connectedToFacebook', 'isVIP', 'isVerified', 'lang_fr', 'lang_en', 'lang_de', 'lang_it', 'lang_es', 'lang_pt', 'crypt', 'flirtstar', 'freshman', 'hasBirthday', 'highlighted', 'locked', 'mobile', 'online', 'isSystemProfile']
+string_columns = ['name', 'whazzup', 'freetext']
+enum_columns = ['city', 'locationCity', 'genderLooking', 'location', 'pictureId']
+empty_columns = ['locationCitySub', 'userInfo_visitDate']
+id_columns = ['userId']
+
+df_merged_dropped = df_merged.drop(columns = date_columns + string_columns + empty_columns + id_columns)
+
+for column in binary_columns:
+    df_merged_dropped[column] = df_merged_dropped[column].astype(bool)
+
+
+df_merged_dropped.to_excel('df_merged_dropped.xlsx')
 
 """
-db_merged_normalized = db_merged.copy()
-date_columns = ['lastOnline', 'lastOnlineDate']
-integer_columns = ['age', 'counts_pictures', 'counts_profileVisits', 'counts_kisses', 'lastOnlineTs', 'lang_count', 'countDetails', 'distance', 'counts_details', 'counts_fans', 'counts_g', 'lastOnlineTime']
-
 db_merged_normalized['lastOnlineTs'].replace('', np.nan, inplace=True)
 db_merged_normalized.dropna(subset=['lastOnlineTs'], inplace=True)
 db_merged_normalized['lastOnlineTs'] = pandas.to_numeric(db_merged_normalized['lastOnlineTs'])
