@@ -36,18 +36,15 @@ number_columns = ['age', 'counts_pictures', 'counts_profileVisits', 'counts_kiss
 binary_columns = ['isFlirtstar', 'isHighlighted', 'isInfluencer', 'isMobile', 'isNew', 'isOnline', 'isVip', 'verified', 'shareProfileEnabled', 'birthd']
 boolean_columns = ['flirtInterests_chat', 'flirtInterests_friends', 'flirtInterests_date', 'connectedToFacebook', 'isVIP', 'isVerified', 'lang_fr', 'lang_en', 'lang_de', 'lang_it', 'lang_es', 'lang_pt', 'crypt', 'flirtstar', 'freshman', 'hasBirthday', 'highlighted', 'locked', 'mobile', 'online', 'isSystemProfile']
 string_columns = ['name', 'whazzup', 'freetext']
-enum_columns = ['city', 'locationCity', 'genderLooking', 'location', 'pictureId']
+enum_columns = ['city', 'locationCity', 'country', 'genderLooking', 'location', 'pictureId']
 empty_columns = ['locationCitySub', 'userInfo_visitDate']
 id_columns = ['userId']
 single_value_columns = ['gender']
 outdated_columns = ['lastOnlineTime']
 
-df = df.drop(columns = date_columns + string_columns + empty_columns + id_columns + single_value_columns + outdated_columns) #ici on enleve les columns pas interessantes
+df = df.drop(columns = date_columns + string_columns + enum_columns + empty_columns + id_columns + single_value_columns + outdated_columns) #ici on enleve les columns pas interessantes
 
-for column in binary_columns: #ici on change les 0 et 1 en booleans
-    df[column] = df[column].astype(bool)
-
-for column in boolean_columns: #ici on change les strings true et false en booleans
+for column in binary_columns + boolean_columns: #ici on change les 0 et 1 en booleans
     df[column] = df[column].astype(bool)
 
 df = df.T.drop_duplicates().T  #ici on elimine les columns duplicate dans leurs valeurs
@@ -59,18 +56,11 @@ df['lastOnlineTs'] = pandas.to_numeric(df['lastOnlineTs'])
 for column in number_columns: # ici on normalise les columns qui ont un number
     df[column] = (df[column] - df[column].min()) / (df[column].max() - df[column].min())
 
-
-
-#df_train, df_test = train_test_split(df, train_size=0.8, test_size=0.2, random_state=1)
-
-#df_train.to_excel('df_train.xlsx')
-#df_test.to_excel('df_test.xlsx')
-
-df.to_excel('df.xlsx')
-
-
-
-
-def gaussian_bayesian():
-    X = data.drop("Species", axis=1)
-    y = data['Species']
+def gaussian_bayesian(df):
+    X = df.drop("est_populaire", axis=1)
+    y = df['est_populaire'].astype(bool)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
+    gnb = GaussianNB()
+    y_pred = gnb.fit(X_train, y_train).predict(X_test)
+    print("Number of well labeled points out of a total %d points : %d" % (X_test.shape[0], (y_test == y_pred).sum()))
+gaussian_bayesian(df)
