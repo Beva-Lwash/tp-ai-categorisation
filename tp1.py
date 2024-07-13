@@ -3,6 +3,8 @@ import pandas as pandas
 import sqlite3
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import CategoricalNB
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -29,6 +31,16 @@ def pop_score(row):
     return (row['counts_profileVisits'] > 10) and ((row['counts_kisses'] / row['counts_profileVisits']) > 0.05)
 df['est_populaire'] = df.apply(pop_score, axis=1) #ici on cree une colonne qui indique la popularite du profil
 
+"""
+def aime_m(row):
+    return row['genderLooking'] == "M" or row['genderLooking'] == "both"
+df['aime_m'] = df.apply(aime_m, axis=1)  
+
+def aime_f(row):
+    return row['genderLooking'] == "F" or row['genderLooking'] == "both"
+df['aime_f'] = df.apply(aime_f, axis=1)  
+"""
+
 #df['diff'] = df['lastOnlineTime'] - df['lastOnlineTs']  #ici on verifie entre lastOnlineTs et lastOnlineTime quel est le plus recent (cest lastOnlineTs alors on decide de la garder)
 
 date_columns = ['lastOnline', 'lastOnlineDate']
@@ -44,7 +56,7 @@ outdated_columns = ['lastOnlineTime']
 
 df = df.drop(columns = date_columns + string_columns + enum_columns + empty_columns + id_columns + single_value_columns + outdated_columns) #ici on enleve les columns pas interessantes
 
-for column in binary_columns + boolean_columns: #ici on change les 0 et 1 en booleans
+for column in binary_columns + boolean_columns: #ici on change les 0 et 1 en booleans et les true false en booleans
     df[column] = df[column].astype(bool)
 
 df = df.T.drop_duplicates().T  #ici on elimine les columns duplicate dans leurs valeurs
@@ -62,5 +74,13 @@ def gaussian_bayesian(df, seed):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
     gnb = GaussianNB()
     y_pred = gnb.fit(X_train, y_train).predict(X_test)
-    print("Number of well labeled points out of a total %d points : %d" % (X_test.shape[0], (y_test == y_pred).sum()))
-gaussian_bayesian(df, 6)
+    #print("Number of well labeled points out of a total %d points : %d" % (X_test.shape[0], (y_test == y_pred).sum()))
+    return (y_test == y_pred).sum()
+
+def get_gaussian_score(df):
+    total = 0
+    iterations = 1000
+    for i in range(iterations):
+        total += gaussian_bayesian(df, i)
+    return total / iterations
+print(get_gaussian_score(df))
