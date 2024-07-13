@@ -3,6 +3,8 @@ import pandas as pandas
 import sqlite3
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 
 '''
 def loadData(file):
@@ -23,6 +25,10 @@ api_df_table = pandas.read_sql_query("SELECT * FROM api", con)
 con.close()
 df = pandas.merge(object_df_table, api_df_table, on="userId", how='inner', suffixes=('', '_y')).filter(regex='^(?!.*_y)')
 
+def pop_score(row):
+    return (row['counts_profileVisits'] > 10) and ((row['counts_kisses'] / row['counts_profileVisits']) > 0.05)
+df['est_populaire'] = df.apply(pop_score, axis=1) #ici on cree une colonne qui indique la popularite du profil
+
 #df['diff'] = df['lastOnlineTime'] - df['lastOnlineTs']  #ici on verifie entre lastOnlineTs et lastOnlineTime quel est le plus recent (cest lastOnlineTs alors on decide de la garder)
 
 date_columns = ['lastOnline', 'lastOnlineDate']
@@ -38,18 +44,33 @@ outdated_columns = ['lastOnlineTime']
 
 df = df.drop(columns = date_columns + string_columns + empty_columns + id_columns + single_value_columns + outdated_columns) #ici on enleve les columns pas interessantes
 
-for column in binary_columns: #ici on change les 0 et 1 en true et false
+for column in binary_columns: #ici on change les 0 et 1 en booleans
     df[column] = df[column].astype(bool)
+
+for column in boolean_columns: #ici on change les strings true et false en booleans
+    df[column] = df[column].astype(bool)
+
+df = df.T.drop_duplicates().T  #ici on elimine les columns duplicate dans leurs valeurs
 
 df['lastOnlineTs'].replace('', np.nan, inplace=True) #ici on elimine les rangees vides et on change les timestamp notation scientifique en integers
 df.dropna(subset=['lastOnlineTs'], inplace=True)
 df['lastOnlineTs'] = pandas.to_numeric(df['lastOnlineTs'])
 
-df = df.loc[:,~df.apply(lambda x: x.duplicated(),axis=1).all()].copy() #ici on elimine les columns duplicate dans leurs valeurs
-
 for column in number_columns: # ici on normalise les columns qui ont un number
     df[column] = (df[column] - df[column].min()) / (df[column].max() - df[column].min())
+
+
+
+#df_train, df_test = train_test_split(df, train_size=0.8, test_size=0.2, random_state=1)
+
+#df_train.to_excel('df_train.xlsx')
+#df_test.to_excel('df_test.xlsx')
 
 df.to_excel('df.xlsx')
 
 
+
+
+def gaussian_bayesian():
+    X = data.drop("Species", axis=1)
+    y = data['Species']
