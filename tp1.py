@@ -1,16 +1,8 @@
 import csv
 import pandas as pandas
 import sqlite3
-import matplotlib.pyplot as plt
-from IPython.display import display, HTML
-import plotly
-from ipydatagrid import DataGrid
-import openpyxl
 import numpy as np
-
-pandas.set_option('display.max_rows', 10)
-pandas.set_option('display.max_columns', None)
-pandas.set_option('display.width', 10)
+from sklearn.naive_bayes import GaussianNB
 
 '''
 def loadData(file):
