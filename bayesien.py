@@ -68,18 +68,5 @@ df['lastOnlineTs'] = pandas.to_numeric(df['lastOnlineTs'])
 for column in number_columns: # ici on normalise les columns qui ont un number
     df[column] = (df[column] - df[column].min()) / (df[column].max() - df[column].min())
 
-def gaussian_bayesian(df, seed):
-    X = df.drop("est_populaire", axis=1)
-    y = df['est_populaire'].astype(bool)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
-    gnb = GaussianNB()
-    y_pred = gnb.fit(X_train, y_train).predict(X_test)
-    #print("Number of well labeled points out of a total %d points : %d" % (X_test.shape[0], (y_test == y_pred).sum()))
-    return (y_test == y_pred).sum()
-def get_gaussian_score(df):
-    total = 0
-    iterations = 1000
-    for i in range(iterations):
-        total += gaussian_bayesian(df, i)
-    return total / iterations
-print(get_gaussian_score(df))
+df.to_sql('processed_data', con, if_exists='replace', index=False)
+con.close()
