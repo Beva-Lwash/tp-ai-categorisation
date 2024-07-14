@@ -86,6 +86,6 @@ cm = get_average_confusion_matrix(df)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Non", "Oui"])
 disp.plot(values_format='.0f')
 plt.title('Matrice de confusion')
-plt.xlabel('Valeur prédite')
-plt.ylabel('Valeur test')
+plt.xlabel('Valeur_prédite')
+plt.ylabel('Valeur_test')
 plt.show() #ici on affiche la matrice de confusion
