@@ -50,7 +50,7 @@ for column in number_columns: # ici on normalise les columns qui ont un number
 
     X = df.drop("est_populaire", axis=1)
     Y = df['est_populaire'].astype(bool)
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=2)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=5)
 
 """
 Fonction qui créer un classificateur k-nn
