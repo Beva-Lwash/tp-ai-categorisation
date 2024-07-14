@@ -2,10 +2,12 @@ import csv
 import pandas as pandas
 import sqlite3
 import numpy as np
+import matplotlib.pyplot as plt
 import math
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 import sklearn.metrics as metrics
+from sklearn.metrics import confusion_matrix ,ConfusionMatrixDisplay 
 
 dbfile = 'users_lovoo_v3.db'
 con = sqlite3.connect(dbfile)
@@ -65,7 +67,7 @@ def knnClass(k,X_train,Y_train):
 # de validations
 """
 def confusionMatrixknn(knnClass,X_train,Y_train,X_test,Y_test):
-  metrics.plot_confusion_matrix(knnClass, X_test, Y_test)
+  print(metrics.plot_confusion_matrix(knnClass, X_test, Y_test))
   print("Train accuracy: ", knnClass.score(X_train, Y_train))
   print("Test Accuracy: ", knnClass.score(X_test, Y_test))
 
@@ -87,5 +89,6 @@ def plus_proche_nombre_impair(n):
       return entier_plus_proche-1
 
 i=plus_proche_nombre_impair(temp)
-glassknn = knnClass(i,X_train, Y_train)
+glassknn = knnClass(i,X_train,Y_train)
 confusionMatrixknn(glassknn,X_train, Y_train, X_test, Y_test)
+plt.show()
