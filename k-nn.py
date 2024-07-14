@@ -2,12 +2,10 @@ import csv
 import pandas as pandas
 import sqlite3
 import numpy as np
-from sklearn.naive_bayes import GaussianNB
-from sklearn.naive_bayes import CategoricalNB
-from sklearn.naive_bayes import MultinomialNB
+import math
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
-
+import sklearn.metrics as metrics
 
 dbfile = 'users_lovoo_v3.db'
 con = sqlite3.connect(dbfile)
@@ -51,8 +49,8 @@ for column in number_columns: # ici on normalise les columns qui ont un number
 
 
     X = df.drop("est_populaire", axis=1)
-    y = df['est_populaire'].astype(bool)
-    X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
+    Y = df['est_populaire'].astype(bool)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=2)
 
 """
 Fonction qui créer un classificateur k-nn
@@ -75,6 +73,19 @@ def confusionMatrixknn(knnClass,X_train,Y_train,X_test,Y_test):
 le k actuel que l'on a besoin appellé i 
 """
 
-  i=math.sqrt(len(Y_train.axes[0])/2) #ici j'ai le  k actuel fais la formule du court k = racine (n/c)
-  glassknn = knnClass(i,X_FullTrain, Y_FullTrain)
-  confusionMatrixknn(glassknn,X_FullTrain, Y_FullTrain, X_FullTest, Y_FullTest)
+temp=math.sqrt(len(Y_train.axes[0])/2) #ici j'ai le  k actuel fais la formule du court k = racine (n/c)
+
+def plus_proche_nombre_impair(n):
+  entier_plus_proche =round(n)
+
+  if entier_plus_proche % 2 !=0:
+    return entier_plus_proche
+  else:
+    if n > entier_plus_proche:
+      return entier_plus_proche+1
+    else:
+      return entier_plus_proche-1
+
+i=plus_proche_nombre_impair(temp)
+glassknn = knnClass(i,X_train, Y_train)
+confusionMatrixknn(glassknn,X_train, Y_train, X_test, Y_test)
