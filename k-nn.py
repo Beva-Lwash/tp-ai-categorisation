@@ -51,6 +51,7 @@ df['lastOnlineTs'] = pd.to_numeric(df['lastOnlineTs'])
 for column in number_columns:
     df[column] = (df[column] - df[column].min()) / (df[column].max() - df[column].min())
 
+df.to_excel("merged_donnés_k_nn.xlsx") 
 
 # Create KNN classifier
 def knnClass(k, X_train, Y_train):
