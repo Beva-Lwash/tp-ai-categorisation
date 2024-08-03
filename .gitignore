@@ -8,3 +8,4 @@ TP1 - Data/
 *.xlsx#
 *.jpeg
 *.jpg
+tensorflow/*
