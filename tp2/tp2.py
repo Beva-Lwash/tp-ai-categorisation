@@ -1,14 +1,16 @@
+import os
+
+
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
 import matplotlib.pyplot as plt
 import numpy as np
 import PIL
 import tensorflow as tf
 import pathlib
-import os
 
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 
 # Charger les données
