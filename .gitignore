@@ -9,3 +9,6 @@ TP1 - Data/
 *.jpeg
 *.jpg
 tensorflow/*
+*.h5
+*.json
+*.png

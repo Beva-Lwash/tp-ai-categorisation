@@ -1,122 +1,63 @@
-import os
-
-
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-
-os.environ['CUDA_VISIBLE_DEVICES'] = ''
-
-import matplotlib.pyplot as plt
-import numpy as np
-import PIL
 import tensorflow as tf
+import numpy as np
+import argparse
+from tensorflow.keras.preprocessing import image
 import pathlib
 
+# Load the saved model
+model = tf.keras.models.load_model('fursuit_classifier.h5')
 
+# Define image preprocessing function
+def preprocess_image(img_path, img_height=64, img_width=64):
+    img = image.load_img(img_path, target_size=(img_height, img_width))
+    img_array = image.img_to_array(img)
+    img_array = tf.expand_dims(img_array, 0)  # Create batch dimension
+    img_array = img_array / 255.0  # Normalize the image
+    return img_array
 
-# Charger les données
+# Define class names and their corresponding labels
 data_dir = pathlib.Path(__file__).parent / 'TP2-images'
-dataset = tf.data.Dataset.list_files(str(data_dir/'*/*'))
-image_count = len(list(data_dir.glob('*/*')))
-batch_size = 1100
-img_height = 64
-img_width = 64
+class_names = sorted([item.name for item in data_dir.glob('*')])
 
-train_ds = tf.keras.utils.image_dataset_from_directory(
-    data_dir,
-    validation_split=0.2,
-    subset="training",
-    seed=123,
-    image_size=(img_height, img_width),
-    batch_size=batch_size)
+# Define fursuit class and mapping for animals
+fursuit_class_name = "fursuit"  # The exact name should match one of the class_names
 
-class_names = train_ds.class_names
-print("Classes:", class_names)
+# Map Italian class names to French
+class_name_translation = {
+    "cane": "chien",
+    "elefante": "elephant",
+    "cavallo": "cheval",
+    "farfalla": "papillon",
+    "gallina": "poulet",
+    "gatto": "chat",
+    "mucca": "vache",
+    "pecora": "mouton",
+    "ragno": "araignee",
+    "scoiattolo": "ecureuil"
+}
 
-val_ds = tf.keras.utils.image_dataset_from_directory(
-    data_dir,
-    validation_split=0.2,
-    subset="validation",
-    seed=123,
-    image_size=(img_height, img_width),
-    batch_size=batch_size)
+# Reverse the mapping for easier lookup
+french_to_italian = {v: k for k, v in class_name_translation.items()}
 
-AUTOTUNE = tf.data.AUTOTUNE
-train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
-val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
+# Classify a new image
+def classify_image(img_path):
+    img_array = preprocess_image(img_path)
+    predictions = model.predict(img_array)
+    predicted_class_index = np.argmax(predictions[0])
+    predicted_class = class_names[predicted_class_index]
+    
+    # Translate the class name
+    if predicted_class == fursuit_class_name:
+        print("Fursuit: Yes")
+        print("Espece: N/A")
+    else:
+        french_class = class_name_translation.get(predicted_class, "Unknown")
+        print("Fursuit: No")
+        print(f"Espece: {french_class}")
 
-print("Nombre d'images:", image_count)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Classify an image using a trained model.')
+    parser.add_argument('image_path', type=str, help='Path to the image file to classify')
+    args = parser.parse_args()
 
-num_classes = len(class_names)
-
-# Définir le modèle
-model = tf.keras.Sequential([
-    tf.keras.layers.Rescaling(1./255),
-    tf.keras.layers.Conv2D(32, 3, activation='relu'),
-    tf.keras.layers.MaxPooling2D(),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dense(num_classes)
-])
-
-# Compiler le modèle sans spécifier d'optimiseur explicitement
-model.compile(
-    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-    metrics=['accuracy']
-)
-
-epochs = 5 
-history = model.fit(
-    train_ds,
-    validation_data=val_ds,
-    epochs=epochs
-)
-
-model.summary()
-
-learning_rate = model.optimizer.learning_rate.numpy()
-optimizer_name = model.optimizer.get_config()['name']
-
-accuracy = history.history['accuracy'][-1]
-val_accuracy = history.history['val_accuracy'][-1]
-
-print(f"Learning Rate: {learning_rate}")
-print(f"Optimizer: {optimizer_name}")
-print(f"Batch Size: {batch_size}")
-print(f"Epochs: {epochs}")
-print(f"Training Accuracy: {accuracy}")
-print(f"Validation Accuracy: {val_accuracy}")
-
-# Tracer les courbes de précision et de perte
-def plot_metrics(history):
-    acc = history.history['accuracy']
-    val_acc = history.history['val_accuracy']
-    loss = history.history['loss']
-    val_loss = history.history['val_loss']
-    epochs_range = range(epochs)
-
-    plt.figure(figsize=(12, 8))
-
-    plt.subplot(1, 2, 1)
-    plt.plot(epochs_range, acc, label='Training Accuracy')
-    plt.plot(epochs_range, val_acc, label='Validation Accuracy')
-    plt.legend(loc='lower right')
-    plt.title('Training and Validation Accuracy')
-
-    plt.subplot(1, 2, 2)
-    plt.plot(epochs_range, loss, label='Training Loss')
-    plt.plot(epochs_range, val_loss, label='Validation Loss')
-    plt.legend(loc='upper right')
-    plt.title('Training and Validation Loss')
-    plt.show()
-
-plot_metrics(history)
-
-# Afficher l'analyse des paramètres expérimentaux
-def analyse_experiment():
-    print("\nAnalyse des paramètres expérimentaux:")
-    print("- Learning Rate par défaut utilisé.")
-    print("- Batch Size de 1100 est élevé, vérifiez la mémoire GPU.")
-    print("- Epochs de 5 pour une évaluation initiale rapide.")
-    print("- Validation Split de 20% est standard.")
-
-analyse_experiment()
+    classify_image(args.image_path)
