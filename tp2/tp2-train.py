@@ -11,9 +11,9 @@ import json
 
 # Load your data
 data_dir = pathlib.Path(__file__).parent / 'TP2-images'
-batch_size = 1100
-img_height = 64
-img_width = 64
+batch_size = 500
+img_height = 80
+img_width = 80
 
 class_names = sorted([item.name for item in data_dir.glob('*') if item.is_dir()])
 
@@ -62,11 +62,10 @@ model.compile(
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=5
+    epochs=300
 )
 
-# Save the model
-model.save('fursuit_classifier.h5')
+
 
 # Save the training history
 with open('history.json', 'w') as f:
