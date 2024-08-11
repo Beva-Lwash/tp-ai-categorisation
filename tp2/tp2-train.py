@@ -12,8 +12,8 @@ import json
 # Load your data
 data_dir = pathlib.Path(__file__).parent / 'TP2-images'
 batch_size = 500
-img_height = 80
-img_width = 80
+img_height = 64
+img_width = 64
 
 class_names = sorted([item.name for item in data_dir.glob('*') if item.is_dir()])
 
@@ -44,7 +44,7 @@ num_classes = len(class_names)
 
 # Define the model
 model = tf.keras.Sequential([
-    tf.keras.layers.Rescaling(1./255),
+    tf.keras.layers.Rescaling(1./256),
     tf.keras.layers.Conv2D(32, 3, activation='relu'),
     tf.keras.layers.MaxPooling2D(),
     tf.keras.layers.Flatten(),
@@ -62,7 +62,7 @@ model.compile(
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=300
+    epochs=1
 )
 
 
