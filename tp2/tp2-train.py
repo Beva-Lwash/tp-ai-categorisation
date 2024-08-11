@@ -46,18 +46,7 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
 )
 
 
-# Assuming your dataset labels are sparse (i.e., single integers per label)
-labels = []
-for _, label_batch in train_ds:
-    labels.extend(label_batch.numpy())
 
-class_weights = compute_class_weight(
-    class_weight='balanced',
-    classes=np.unique(labels),
-    y=labels
-)
-
-class_weights = dict(enumerate(class_weights))
 
 
 # Normalization layer
@@ -151,6 +140,20 @@ train_ds = train_ds.map(lambda x, y: preprocess_image(x, y), num_parallel_calls=
 train_ds = train_ds.map(lambda x, y: (normalisation(x), y))
 val_ds = val_ds.map(lambda x, y: (normalisation(x), y))
 
+# Assuming your dataset labels are sparse (i.e., single integers per label)
+labels = []
+for _, label_batch in train_ds:
+    labels.extend(label_batch.numpy())
+
+class_weights = compute_class_weight(
+    class_weight='balanced',
+    classes=np.unique(labels),
+    y=labels
+)
+
+class_weights = dict(enumerate(class_weights))
+
+
 # Define model
 model = tf.keras.Sequential([
     tf.keras.layers.Input(shape=(img_height, img_width, 3)),
@@ -158,6 +161,7 @@ model = tf.keras.Sequential([
     tf.keras.layers.MaxPooling2D(),
     tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
     tf.keras.layers.MaxPooling2D(),
+    tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
     tf.keras.layers.MaxPooling2D(),
     tf.keras.layers.Flatten(),
