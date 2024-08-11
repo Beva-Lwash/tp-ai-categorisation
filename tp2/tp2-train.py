@@ -179,7 +179,7 @@ history = model.fit(
     train_ds,
     class_weight=class_weights,
     validation_data=val_ds,
-    epochs=100,
+    epochs=300,
     callbacks=[lr_logger]
 )
 
