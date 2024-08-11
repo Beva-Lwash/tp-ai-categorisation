@@ -1,31 +1,33 @@
+
 import os
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import tensorflow as tf
-import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, classification_report, ConfusionMatrixDisplay
-import pathlib
-import json
+import numpy as np
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 
-# Load your data
-data_dir = pathlib.Path(__file__).parent / 'TP2-images'
-batch_size = 500
+import pathlib
+
+# Parameters
 img_height = 80
 img_width = 80
+batch_size = 1000
+
+data_dir = pathlib.Path('TP2-images')
 
 class_names = sorted([item.name for item in data_dir.glob('*') if item.is_dir()])
 
-
-# Load the dataset and obtain class names
+# Load dataset
 train_ds = tf.keras.utils.image_dataset_from_directory(
-    data_dir,
-    validation_split=0.2,
-    subset="training",
-    seed=123,
-    image_size=(img_height, img_width),
-    batch_size=batch_size)
+     data_dir,
+     validation_split=0.2,
+     subset="training",
+     seed=123,
+     image_size=(img_height, img_width),
+     batch_size=batch_size
+)
 
 val_ds = tf.keras.utils.image_dataset_from_directory(
     data_dir,
@@ -33,45 +35,111 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
     subset="validation",
     seed=123,
     image_size=(img_height, img_width),
-    batch_size=batch_size)
+    batch_size=batch_size
+)
 
-AUTOTUNE = tf.data.AUTOTUNE
-train_ds = train_ds.cache().prefetch(buffer_size=AUTOTUNE)
-val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
+# Normalization layer
+normalisation = tf.keras.Sequential([
+    tf.keras.layers.Rescaling(1./255)
+])
+# Define data augmentation layers
+data_augmentation_fursuit = tf.keras.Sequential([
+    tf.keras.layers.RandomFlip("horizontal_and_vertical"),
+    tf.keras.layers.RandomRotation(0.5),
+    tf.keras.layers.RandomZoom(0.7),
+    tf.keras.layers.RandomBrightness(0.4),
+    tf.keras.layers.RandomContrast(0.1),
 
-# Retrieve class names directly from the `image_dataset_from_directory` call
-num_classes = len(class_names)
-
-# Define the model
-model = tf.keras.Sequential([
-    tf.keras.layers.Rescaling(1./255),
-    tf.keras.layers.Conv2D(32, 3, activation='relu'),
-    tf.keras.layers.MaxPooling2D(),
-    tf.keras.layers.Flatten(),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dense(num_classes)
 ])
 
-# Compile the model
-model.compile(
-    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-    metrics=['accuracy']
+data_augmentation_other = tf.keras.Sequential([
+    tf.keras.layers.RandomFlip("horizontal_and_vertical"),
+    tf.keras.layers.RandomRotation(0.1),
+])
+
+# Define normalization layer
+normalisation = tf.keras.layers.Rescaling(1./255)
+
+def preprocess_image(image, label):
+    class_index = tf.argmax(label)
+    # Define the classes that will use specific augmentations
+    fursuit_class_index = class_names.index('Fursuit')
+    other_classes_indices = [
+        class_names.index('elefante'),
+        class_names.index('gatto'),
+        class_names.index('mucca'),
+        class_names.index('pecora')
+    ]
+    
+    def apply_augmentation(image, augmentation_layer):
+        return augmentation_layer(image)
+
+    def apply_augmentations(image):
+        is_fursuit = tf.equal(class_index, fursuit_class_index)
+        is_other_class = tf.reduce_any(tf.equal(class_index, other_classes_indices))
+        
+        image = tf.cond(
+            is_fursuit,
+            true_fn=lambda: apply_augmentation(image, data_augmentation_fursuit),
+            false_fn=lambda: tf.cond(
+                is_other_class,
+                true_fn=lambda: apply_augmentation(image, data_augmentation_other),
+                false_fn=lambda: image
+            )
+        )
+        return image
+
+    image = apply_augmentations(image)
+    return image, label
+
+# Load dataset
+train_ds = tf.keras.utils.image_dataset_from_directory(
+    data_dir,
+    validation_split=0.2,
+    subset="training",
+    seed=123,
+    image_size=(img_height, img_width),
+    batch_size=batch_size
 )
+
+val_ds = tf.keras.utils.image_dataset_from_directory(
+    data_dir,
+    validation_split=0.2,
+    subset="validation",
+    seed=123,
+    image_size=(img_height, img_width),
+    batch_size=batch_size
+)
+
+# Apply preprocessing
+train_ds = train_ds.map(lambda x, y: preprocess_image(x, y), num_parallel_calls=tf.data.AUTOTUNE)
+train_ds = train_ds.map(lambda x, y: (normalisation(x), y))
+val_ds = val_ds.map(lambda x, y: (normalisation(x), y))
+
+# Define model
+model = tf.keras.Sequential([
+    tf.keras.layers.Input(shape=(img_height, img_width, 3)),
+    tf.keras.layers.Conv2D(16, (3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(),
+    tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(),
+    tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dense(units=len(class_names), activation='softmax')
+])
+
+model.compile(optimizer='adamw',
+              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              metrics=['accuracy'])
 
 # Train the model
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=300
+    epochs=150
 )
-
-
-
-# Save the training history
-with open('history.json', 'w') as f:
-    json.dump(history.history, f)
-
-import matplotlib.pyplot as plt
 
 # Plotting function for accuracy and loss
 def plot_metrics(history, filename='training_validation_metrics.png'):
@@ -135,3 +203,6 @@ def evaluate_model(validation_data):
     plt.close()
 
 evaluate_model(val_ds)
+
+
+
