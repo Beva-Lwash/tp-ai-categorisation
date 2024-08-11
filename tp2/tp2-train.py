@@ -13,8 +13,8 @@ from sklearn.utils.class_weight import compute_class_weight
 import pathlib
 
 # Parameters
-img_height = 80
-img_width = 80
+img_height = 64
+img_width = 64
 batch_size = 1000
 
 data_dir = pathlib.Path('TP2-images')
