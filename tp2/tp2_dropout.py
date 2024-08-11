@@ -62,7 +62,7 @@ model.compile(
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=300
+    epochs=1
 )
 
 
@@ -137,3 +137,4 @@ def evaluate_model(validation_data):
 evaluate_model(val_ds)
 
 model.save('fursuit_classifier.h5')
+
