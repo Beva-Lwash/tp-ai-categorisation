@@ -11,8 +11,8 @@ from sklearn.metrics import classification_report, confusion_matrix, ConfusionMa
 import pathlib
 
 # Parameters
-img_height = 64
-img_width = 64
+img_height = 80
+img_width = 80
 batch_size = 1000
 
 data_dir = pathlib.Path('TP2-images')
@@ -118,8 +118,12 @@ val_ds = val_ds.map(lambda x, y: (normalisation(x), y))
 
 # Define model
 model = tf.keras.Sequential([
-    tf.keras.layers.Rescaling(1./255),
-    tf.keras.layers.Conv2D(32, 3, activation='relu'),
+    tf.keras.layers.Input(shape=(img_height, img_width, 3)),
+    tf.keras.layers.Conv2D(16, (3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(),
+    tf.keras.layers.Conv2D(32, (3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(),
+    tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
     tf.keras.layers.MaxPooling2D(),
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(64, activation='relu'),
@@ -134,7 +138,7 @@ model.compile(optimizer='adamw',
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=300
+    epochs=150
 )
 
 # Plotting function for accuracy and loss
@@ -199,3 +203,6 @@ def evaluate_model(validation_data):
     plt.close()
 
 evaluate_model(val_ds)
+
+
+
