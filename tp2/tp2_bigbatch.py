@@ -13,7 +13,7 @@ import pathlib
 # Parameters
 img_height = 64
 img_width = 64
-batch_size = 1000
+batch_size = 5000
 
 data_dir = pathlib.Path('TP2-images')
 
@@ -206,4 +206,4 @@ evaluate_model(val_ds)
 
 
 
-model.save('fursuit_classifier_train.h5')
+model.save('fursuit_classifier_bigbatch.h5')
