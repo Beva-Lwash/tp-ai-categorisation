@@ -7,17 +7,24 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.utils.class_weight import compute_class_weight
+
 
 import pathlib
 
 # Parameters
-img_height = 64
-img_width = 64
+img_height = 80
+img_width = 80
 batch_size = 1000
 
 data_dir = pathlib.Path('TP2-images')
 
 class_names = sorted([item.name for item in data_dir.glob('*') if item.is_dir()])
+
+
+
+
+
 
 # Load dataset
 train_ds = tf.keras.utils.image_dataset_from_directory(
@@ -38,10 +45,26 @@ val_ds = tf.keras.utils.image_dataset_from_directory(
     batch_size=batch_size
 )
 
+
+# Assuming your dataset labels are sparse (i.e., single integers per label)
+labels = []
+for _, label_batch in train_ds:
+    labels.extend(label_batch.numpy())
+
+class_weights = compute_class_weight(
+    class_weight='balanced',
+    classes=np.unique(labels),
+    y=labels
+)
+
+class_weights = dict(enumerate(class_weights))
+
+
 # Normalization layer
 normalisation = tf.keras.Sequential([
     tf.keras.layers.Rescaling(1./255)
 ])
+
 # Define data augmentation layers
 data_augmentation_fursuit = tf.keras.Sequential([
     tf.keras.layers.RandomFlip("horizontal_and_vertical"),
@@ -92,6 +115,18 @@ def preprocess_image(image, label):
     image = apply_augmentations(image)
     return image, label
 
+class LearningRateLogger(tf.keras.callbacks.Callback):
+    def __init__(self):
+        super(LearningRateLogger, self).__init__()
+        self.learning_rates = []
+
+    def on_epoch_end(self, epoch, logs=None):
+        lr = self.model.optimizer.learning_rate.numpy()
+        self.learning_rates.append(lr)
+        print(f"Epoch {epoch+1}: Learning Rate is {lr}")
+
+
+
 # Load dataset
 train_ds = tf.keras.utils.image_dataset_from_directory(
     data_dir,
@@ -131,47 +166,65 @@ model = tf.keras.Sequential([
 ])
 
 model.compile(optimizer='adamw',
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
               metrics=['accuracy'])
 
-# Train the model
+lr_logger = LearningRateLogger()
+
 history = model.fit(
     train_ds,
+    class_weight=class_weights,
     validation_data=val_ds,
-    epochs=5
+    epochs=100,
+    callbacks=[lr_logger]
 )
 
+model.summary()
+
+num_samples_train = tf.data.experimental.cardinality(train_ds).numpy()
+print(f"Nombre total d'échantillons d'entraînement : {num_samples_train}")
+
+
+
 # Plotting function for accuracy and loss
-def plot_metrics(history, filename='training_validation_metrics.png'):
+def plot_metrics(history, lr_logger, filename='training_validation_metrics_with_lr.png'):
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
     loss = history.history['loss']
     val_loss = history.history['val_loss']
+    learning_rates = lr_logger.learning_rates
     epochs_range = range(len(acc))
 
     plt.figure(figsize=(12, 8))
 
     # Accuracy plot
-    plt.subplot(1, 2, 1)
+    plt.subplot(2, 2, 1)
     plt.plot(epochs_range, acc, label='Training Accuracy')
     plt.plot(epochs_range, val_acc, label='Validation Accuracy')
     plt.legend(loc='lower right')
     plt.title('Training and Validation Accuracy')
 
     # Loss plot
-    plt.subplot(1, 2, 2)
+    plt.subplot(2, 2, 2)
     plt.plot(epochs_range, loss, label='Training Loss')
     plt.plot(epochs_range, val_loss, label='Validation Loss')
     plt.legend(loc='upper right')
     plt.title('Training and Validation Loss')
+
+    # Learning Rate plot
+    plt.subplot(2, 1, 2)
+    plt.plot(epochs_range, learning_rates, label='Learning Rate')
+    plt.legend(loc='upper right')
+    plt.title('Learning Rate')
 
     # Save the plots to a PNG file
     plt.savefig(filename)
     plt.close()
 
 # Example usage with history from model training
-# Assuming 'history' is the History object returned by model.fit()
-plot_metrics(history)
+# Correct the function call by passing `filename` as a keyword argument
+plot_metrics(history, lr_logger=lr_logger, filename='training_validation_metrics_with_lr.png')
+
 
 
 # Evaluate the model
@@ -206,4 +259,3 @@ evaluate_model(val_ds)
 
 
 
-model.save('fursuit_classifier_train.h5')
