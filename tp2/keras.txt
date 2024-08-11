@@ -1,0 +1,294 @@
+class Activation: Applies an activation function to an output.
+
+class ActivityRegularization: Layer that applies an update to the cost function based input activity.
+
+class Add: Performs elementwise addition operation.
+
+class AdditiveAttention: Additive attention layer, a.k.a. Bahdanau-style attention.
+
+class AlphaDropout: DEPRECATED.
+
+class Attention: Dot-product attention layer, a.k.a. Luong-style attention.
+
+class Average: Averages a list of inputs element-wise..
+
+class AveragePooling1D: Average pooling for temporal data.
+
+class AveragePooling2D: Average pooling operation for 2D spatial data.
+
+class AveragePooling3D: Average pooling operation for 3D data (spatial or spatio-temporal).
+
+class AvgPool1D: Average pooling for temporal data.
+
+class AvgPool2D: Average pooling operation for 2D spatial data.
+
+class AvgPool3D: Average pooling operation for 3D data (spatial or spatio-temporal).
+
+class BatchNormalization: Layer that normalizes its inputs.
+
+class Bidirectional: Bidirectional wrapper for RNNs.
+
+class CategoryEncoding: A preprocessing layer which encodes integer features.
+
+class CenterCrop: A preprocessing layer which crops images.
+
+class Concatenate: Concatenates a list of inputs.
+
+class Conv1D: 1D convolution layer (e.g. temporal convolution).
+
+class Conv1DTranspose: 1D transposed convolution layer.
+
+class Conv2D: 2D convolution layer.
+
+class Conv2DTranspose: 2D transposed convolution layer.
+
+class Conv3D: 3D convolution layer.
+
+class Conv3DTranspose: 3D transposed convolution layer.
+
+class ConvLSTM1D: 1D Convolutional LSTM.
+
+class ConvLSTM2D: 2D Convolutional LSTM.
+
+class ConvLSTM3D: 3D Convolutional LSTM.
+
+class Convolution1D: 1D convolution layer (e.g. temporal convolution).
+
+class Convolution1DTranspose: 1D transposed convolution layer.
+
+class Convolution2D: 2D convolution layer.
+
+class Convolution2DTranspose: 2D transposed convolution layer.
+
+class Convolution3D: 3D convolution layer.
+
+class Convolution3DTranspose: 3D transposed convolution layer.
+
+class Cropping1D: Cropping layer for 1D input (e.g. temporal sequence).
+
+class Cropping2D: Cropping layer for 2D input (e.g. picture).
+
+class Cropping3D: Cropping layer for 3D data (e.g. spatial or spatio-temporal).
+
+class Dense: Just your regular densely-connected NN layer.
+
+class DepthwiseConv1D: 1D depthwise convolution layer.
+
+class DepthwiseConv2D: 2D depthwise convolution layer.
+
+class Discretization: A preprocessing layer which buckets continuous features by ranges.
+
+class Dot: Computes element-wise dot product of two tensors.
+
+class Dropout: Applies dropout to the input.
+
+class ELU: Applies an Exponential Linear Unit function to an output.
+
+class EinsumDense: A layer that uses einsum as the backing computation.
+
+class Embedding: Turns positive integers (indexes) into dense vectors of fixed size.
+
+class Flatten: Flattens the input. Does not affect the batch size.
+
+class FlaxLayer: Keras Layer that wraps a Flax module.
+
+class GRU: Gated Recurrent Unit - Cho et al. 2014.
+
+class GRUCell: Cell class for the GRU layer.
+
+class GaussianDropout: Apply multiplicative 1-centered Gaussian noise.
+
+class GaussianNoise: Apply additive zero-centered Gaussian noise.
+
+class GlobalAveragePooling1D: Global average pooling operation for temporal data.
+
+class GlobalAveragePooling2D: Global average pooling operation for 2D data.
+
+class GlobalAveragePooling3D: Global average pooling operation for 3D data.
+
+class GlobalAvgPool1D: Global average pooling operation for temporal data.
+
+class GlobalAvgPool2D: Global average pooling operation for 2D data.
+
+class GlobalAvgPool3D: Global average pooling operation for 3D data.
+
+class GlobalMaxPool1D: Global max pooling operation for temporal data.
+
+class GlobalMaxPool2D: Global max pooling operation for 2D data.
+
+class GlobalMaxPool3D: Global max pooling operation for 3D data.
+
+class GlobalMaxPooling1D: Global max pooling operation for temporal data.
+
+class GlobalMaxPooling2D: Global max pooling operation for 2D data.
+
+class GlobalMaxPooling3D: Global max pooling operation for 3D data.
+
+class GroupNormalization: Group normalization layer.
+
+class GroupQueryAttention: Grouped Query Attention layer.
+
+class HashedCrossing: A preprocessing layer which crosses features using the "hashing trick".
+
+class Hashing: A preprocessing layer which hashes and bins categorical features.
+
+class Identity: Identity layer.
+
+class InputLayer: This is the class from which all layers inherit.
+
+class InputSpec: Specifies the rank, dtype and shape of every input to a layer.
+
+class IntegerLookup: A preprocessing layer that maps integers to (possibly encoded) indices.
+
+class JaxLayer: Keras Layer that wraps a JAX model.
+
+class LSTM: Long Short-Term Memory layer - Hochreiter 1997.
+
+class LSTMCell: Cell class for the LSTM layer.
+
+class Lambda: Wraps arbitrary expressions as a Layer object.
+
+class Layer: This is the class from which all layers inherit.
+
+class LayerNormalization: Layer normalization layer (Ba et al., 2016).
+
+class LeakyReLU: Leaky version of a Rectified Linear Unit activation layer.
+
+class Masking: Masks a sequence by using a mask value to skip timesteps.
+
+class MaxPool1D: Max pooling operation for 1D temporal data.
+
+class MaxPool2D: Max pooling operation for 2D spatial data.
+
+class MaxPool3D: Max pooling operation for 3D data (spatial or spatio-temporal).
+
+class MaxPooling1D: Max pooling operation for 1D temporal data.
+
+class MaxPooling2D: Max pooling operation for 2D spatial data.
+
+class MaxPooling3D: Max pooling operation for 3D data (spatial or spatio-temporal).
+
+class Maximum: Computes element-wise maximum on a list of inputs.
+
+class MelSpectrogram: A preprocessing layer to convert raw audio signals to Mel spectrograms.
+
+class Minimum: Computes elementwise minimum on a list of inputs.
+
+class MultiHeadAttention: MultiHeadAttention layer.
+
+class Multiply: Performs elementwise multiplication.
+
+class Normalization: A preprocessing layer that normalizes continuous features.
+
+class PReLU: Parametric Rectified Linear Unit activation layer.
+
+class Permute: Permutes the dimensions of the input according to a given pattern.
+
+class RNN: Base class for recurrent layers.
+
+class RandomBrightness: A preprocessing layer which randomly adjusts brightness during training.
+
+class RandomContrast: A preprocessing layer which randomly adjusts contrast during training.
+
+class RandomCrop: A preprocessing layer which randomly crops images during training.
+
+class RandomFlip: A preprocessing layer which randomly flips images during training.
+
+class RandomHeight: DEPRECATED.
+
+class RandomRotation: A preprocessing layer which randomly rotates images during training.
+
+class RandomTranslation: A preprocessing layer which randomly translates images during training.
+
+class RandomWidth: DEPRECATED.
+
+class RandomZoom: A preprocessing layer which randomly zooms images during training.
+
+class ReLU: Rectified Linear Unit activation function layer.
+
+class RepeatVector: Repeats the input n times.
+
+class Rescaling: A preprocessing layer which rescales input values to a new range.
+
+class Reshape: Layer that reshapes inputs into the given shape.
+
+class Resizing: A preprocessing layer which resizes images.
+
+class SeparableConv1D: 1D separable convolution layer.
+
+class SeparableConv2D: 2D separable convolution layer.
+
+class SeparableConvolution1D: 1D separable convolution layer.
+
+class SeparableConvolution2D: 2D separable convolution layer.
+
+class SimpleRNN: Fully-connected RNN where the output is to be fed back as the new input.
+
+class SimpleRNNCell: Cell class for SimpleRNN.
+
+class Softmax: Softmax activation layer.
+
+class SpatialDropout1D: Spatial 1D version of Dropout.
+
+class SpatialDropout2D: Spatial 2D version of Dropout.
+
+class SpatialDropout3D: Spatial 3D version of Dropout.
+
+class SpectralNormalization: Performs spectral normalization on the weights of a target layer.
+
+class StackedRNNCells: Wrapper allowing a stack of RNN cells to behave as a single cell.
+
+class StringLookup: A preprocessing layer that maps strings to (possibly encoded) indices.
+
+class Subtract: Performs elementwise subtraction.
+
+class TFSMLayer: Reload a Keras model/layer that was saved via SavedModel / ExportArchive.
+
+class TextVectorization: A preprocessing layer which maps text features to integer sequences.
+
+class ThresholdedReLU: DEPRECATED.
+
+class TimeDistributed: This wrapper allows to apply a layer to every temporal slice of an input.
+
+class TorchModuleWrapper: Torch module wrapper layer.
+
+class UnitNormalization: Unit normalization layer.
+
+class UpSampling1D: Upsampling layer for 1D inputs.
+
+class UpSampling2D: Upsampling layer for 2D inputs.
+
+class UpSampling3D: Upsampling layer for 3D inputs.
+
+class Wrapper: Abstract wrapper base class.
+
+class ZeroPadding1D: Zero-padding layer for 1D input (e.g. temporal sequence).
+
+class ZeroPadding2D: Zero-padding layer for 2D input (e.g. picture).
+
+class ZeroPadding3D: Zero-padding layer for 3D data (spatial or spatio-temporal).
+
+Functions
+Input(...): Used to instantiate a Keras tensor.
+
+add(...): Functional interface to the keras.layers.Add layer.
+
+average(...): Functional interface to the keras.layers.Average layer.
+
+concatenate(...): Functional interface to the Concatenate layer.
+
+deserialize(...): Returns a Keras layer object via its configuration.
+
+dot(...): Functional interface to the Dot layer.
+
+maximum(...): Functional interface to the keras.layers.Maximum layer.
+
+minimum(...): Functional interface to the keras.layers.Minimum layer.
+
+multiply(...): Functional interface to the keras.layers.Multiply layer.
+
+serialize(...): Returns the layer configuration as a Python dict.
+
+subtract(...): Functional interface to the keras.layers.Subtract layer.
+
+Ce contenu vous a-t-il été utile ?
