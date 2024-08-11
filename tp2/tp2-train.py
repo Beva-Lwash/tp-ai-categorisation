@@ -138,7 +138,7 @@ model.compile(optimizer='adamw',
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=150
+    epochs=5
 )
 
 # Plotting function for accuracy and loss
@@ -206,3 +206,4 @@ evaluate_model(val_ds)
 
 
 
+model.save('fursuit_classifier_train.h5')

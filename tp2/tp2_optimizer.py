@@ -48,11 +48,9 @@ num_classes = len(class_names)
 model = tf.keras.Sequential([
     tf.keras.layers.Rescaling(1./256),
     tf.keras.layers.Conv2D(32, 3, activation='relu'),
-    tf.keras.layers.Dropout(0.2),
     tf.keras.layers.MaxPooling2D(),
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dropout(0.2),
     tf.keras.layers.Dense(num_classes)
 ])
 
@@ -60,6 +58,7 @@ model = tf.keras.Sequential([
 # Compile the model
 model.compile(
     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+    optimizer='adam',
     metrics=['accuracy']
 )
 
@@ -141,4 +140,4 @@ def evaluate_model(validation_data):
 
 evaluate_model(val_ds)
 
-model.save('fursuit_classifier_dropout.h5')
+model.save('fursuit_classifier_optimizer.h5')
