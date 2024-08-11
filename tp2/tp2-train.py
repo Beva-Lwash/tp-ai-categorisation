@@ -261,5 +261,5 @@ def evaluate_model(validation_data):
 
 evaluate_model(val_ds)
 
-
+model.save('fursuit_classifier.h5')
 
