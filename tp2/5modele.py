@@ -169,7 +169,7 @@ model.summary()
 #
 #
 #
-#
+#2e modele
 #
 #
 import os
@@ -202,7 +202,7 @@ batch_size=batch_size)
 
 val_ds = tf.keras.utils.image_dataset_from_directory(
 data_dir,
- validation_split=0.2,
+validation_split=0.2,
 subset="validation",
 seed=123,
 image_size=(img_height, img_width),
@@ -248,7 +248,7 @@ lr_logger = LearningRateLogger()
 # Train the model
 history = model.fit(
 train_ds,
- validation_data=val_ds,
+validation_data=val_ds,
 epochs=200,
 callbacks=[lr_logger]
 )
@@ -374,10 +374,10 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
 
 val_ds = tf.keras.utils.image_dataset_from_directory(
  data_dir,
-  validation_split=0.2,
+ validation_split=0.2,
  subset="validation",
  seed=123,
-  image_size=(img_height, img_width),
+ image_size=(img_height, img_width),
  batch_size=batch_size
 )
 
@@ -747,7 +747,7 @@ lr_logger = LearningRateLogger()
 history = model.fit(
     train_ds,
     validation_data=val_ds,
-    epochs=100,
+    epochs=50,
     callbacks=[lr_logger]
 )
 
