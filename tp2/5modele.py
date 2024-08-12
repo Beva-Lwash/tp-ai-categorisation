@@ -25,16 +25,16 @@ class_names = sorted([item.name for item in data_dir.glob('*') if item.is_dir()]
 
 # Load the dataset and obtain class names
 train_ds = tf.keras.utils.image_dataset_from_directory(
- data_dir,
-validation_split=0.2,
-subset="training",
-seed=123,
-image_size=(img_height, img_width),
-batch_size=batch_size)
+    data_dir,
+    validation_split=0.2,
+    subset="training",
+    seed=123,
+    image_size=(img_height, img_width),
+    batch_size=batch_size)
 
 val_ds = tf.keras.utils.image_dataset_from_directory(
 data_dir,
- validation_split=0.2,
+validation_split=0.2,
 subset="validation",
 seed=123,
 image_size=(img_height, img_width),
@@ -193,7 +193,7 @@ class_names = sorted([item.name for item in data_dir.glob('*') if item.is_dir()]
 
 # Load the dataset and obtain class names
 train_ds = tf.keras.utils.image_dataset_from_directory(
- data_dir,
+data_dir,
 validation_split=0.2,
 subset="training",
 seed=123,
@@ -249,7 +249,7 @@ lr_logger = LearningRateLogger()
 history = model.fit(
 train_ds,
 validation_data=val_ds,
-epochs=200,
+epochs=300,
 callbacks=[lr_logger]
 )
 
@@ -413,7 +413,6 @@ normalisation = tf.keras.layers.Rescaling(1./255)
 
 def preprocess_image(image, label):
   class_index = tf.argmax(label)
-  # Define the classes that will use specific augmentations
  fursuit_class_index = class_names.index('Fursuit')
   other_classes_indices = [
   class_names.index('elefante'),
@@ -443,7 +442,7 @@ image = tf.cond(
 image = apply_augmentations(image)
 return image, label
 
-# Load dataset
+
 train_ds = tf.keras.utils.image_dataset_from_directory(
  data_dir,
   validation_split=0.2,
@@ -489,7 +488,7 @@ loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
 history = model.fit(
 train_ds,
 validation_data=val_ds,
-epochs=3,
+epochs=100,
 callbacks=[lr_logger]
 
 )
