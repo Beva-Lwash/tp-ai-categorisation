@@ -1,4 +1,4 @@
-# TP-INF5081
+# TP-ai-categorisation
 
 
 
